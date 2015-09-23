@@ -20,6 +20,7 @@ import argparse
 import csv
 import datetime
 import logging
+import requests
 import traceback
 
 logger = logging.getLogger(__name__)
@@ -27,10 +28,22 @@ logger = logging.getLogger(__name__)
 def get_blacklist(source):
     '''Retrieve blacklist data'''
     logger.info("get_blacklist: %s", source)
-    # TODO: Retrieve CSV data
-    data = None
-    return data
+
+    try:
+        response = requests.get(source)
+        if len(response.text) > 0:
+            return response.text
+        else:
+            logger.error("Retrieved empty blacklist file")
+            return None
+
+    except requests.exceptions.RequestException as e:
+        logger.error("Blacklist retrieval failed. %s", str(e))
+        logger.debug(traceback.format_exc())
+        return None
+
 #end get_blacklist
+
 
 def generate_report(csv_data, report_filename):
     '''Convert CSV data to report'''

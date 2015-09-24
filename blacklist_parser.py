@@ -58,9 +58,9 @@ def parse_header(header):
     report_timestamp = header[2].strip('#').strip(' ')
     report_datetime = None
     try:
-        report_datetime = datetime.datetime.strptime(report_timestamp, 
+        report_datetime = datetime.datetime.strptime(report_timestamp,
                                                      "Last updated: %Y-%m-%d %H:%M:%S (%Z)")
-    except ValueError, e:
+    except ValueError:
         logger.error("Timestamp in blacklist not formatted as expected: %s", report_timestamp)
         logger.debug(traceback.format_exc())
 
@@ -83,7 +83,7 @@ def parse_trailer(trailer):
 
 def generate_report(report, report_name, num_entries, report_datetime, blacklist_dict):
     """Write the data to the report
-    
+
     Args:
         report: Stream to write the report to. Usually an open file.
         report_name: Name of the blacklist report
@@ -96,9 +96,9 @@ def generate_report(report, report_name, num_entries, report_datetime, blacklist
         """
 
     report.write("%s Blacklist Report\n" % report_name)
-    report.write("(%d IP's found at %s):\n" % (num_entries, 
+    report.write("(%d IP's found at %s):\n" % (num_entries,
                                              report_datetime.strftime("%b %d %H:%M:%S %Y")))
-        
+
     # Write out each section in alphabetical order
     for description in sorted(blacklist_dict.keys()):
         entries = blacklist_dict[description]
@@ -121,7 +121,7 @@ def parse_blacklist(data, report):
         """
 
     logger.info("parse_blacklist")
-    
+
     field_list = "# DstIP,DstPort\n"
     header_end = data.find(field_list)
     if not header_end:
@@ -148,7 +148,7 @@ def parse_blacklist(data, report):
 
             dest_IP, dest_port, description = row
             blacklist_dict[description].append((dest_IP, dest_port))
-    except csv.Error, e:
+    except csv.Error:
         logger.error("CSV parsing failed for blacklist")
         logger.debug(traceback.format_exc())
 
@@ -163,9 +163,9 @@ def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("--verbose", help="output info and debug messages",
                         action="store_true")
-    parser.add_argument("--source", help="source for blacklist CSV file",
+    parser.add_argument("--source", help="override default source for blacklist CSV file",
                         default="https://sslbl.abuse.ch/blacklist/sslipblacklist.csv")
-    parser.add_argument("--dest", help="filename for generated report. Ignored if stdout option used",
+    parser.add_argument("--dest", help="overrid default filename for generated report. Ignored if stdout option used",
                         default="sslbl_abuse_blacklist_%s.report" % datetime.datetime.now().strftime("%Y%m%d%H%M%S"))
     parser.add_argument("--stdout", help="Write report to stdout rather than to a file",
                         action="store_true")
@@ -176,13 +176,13 @@ def main():
         logging_level = logging.DEBUG
     else:
         logging_level = logging.ERROR
-        
+
     if args.stdout:
         report = sys.stdout
     else:
         try:
             report = open(args.dest, 'w')
-        except IOError, e:
+        except IOError:
             logger.error("Failed to open report output file")
             logger.debug(traceback.format_exc())
 
@@ -191,7 +191,7 @@ def main():
     try:
         data = get_blacklist(args.source)
         parse_blacklist(data, report)
-    except Exception, e: #catch-all in case something falls through
+    except Exception: #catch-all in case something falls through
         logger.error(traceback.format_exc())
     finally:
         report.close()

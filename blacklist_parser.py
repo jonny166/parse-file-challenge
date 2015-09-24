@@ -9,7 +9,7 @@ You can also get help on all the command-line flags the program understands
 by running:
   $ python blacklist_parser.py --help
 To get detailed log output run:
-  $ python blacklist_parser.py --logging_level=DEBUG
+  $ python blacklist_parser.py --verbose
 """
 from __future__ import print_function
 

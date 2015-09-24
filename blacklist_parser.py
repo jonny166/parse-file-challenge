@@ -165,7 +165,7 @@ def main():
                         action="store_true")
     parser.add_argument("--source", help="override default source for blacklist CSV file",
                         default="https://sslbl.abuse.ch/blacklist/sslipblacklist.csv")
-    parser.add_argument("--dest", help="overrid default filename for generated report. Ignored if stdout option used",
+    parser.add_argument("--dest", help="override default filename for generated report. Ignored if stdout option used",
                         default="sslbl_abuse_blacklist_%s.report" % datetime.datetime.now().strftime("%Y%m%d%H%M%S"))
     parser.add_argument("--stdout", help="Write report to stdout rather than to a file",
                         action="store_true")
